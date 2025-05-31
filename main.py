@@ -12,10 +12,21 @@ LINE_CHANNEL_SECRET = os.environ["LINE_CHANNEL_SECRET"]
 line_bot_api = LineBotApi(LINE_CHANNEL_ACCESS_TOKEN)
 handler = WebhookHandler(LINE_CHANNEL_SECRET)
 
-zodiac_signs = [
-    "牡羊座", "牡牛座", "双子座", "蟹座", "獅子座", "乙女座",
-    "天秤座", "蠍座", "射手座", "山羊座", "水瓶座", "魚座"
-]
+# 星座：漢字・ひらがな対応
+zodiac_signs_map = {
+    "牡羊座": ["牡羊座", "おひつじ座"],
+    "牡牛座": ["牡牛座", "おうし座"],
+    "双子座": ["双子座", "ふたご座"],
+    "蟹座": ["蟹座", "かに座"],
+    "獅子座": ["獅子座", "しし座"],
+    "乙女座": ["乙女座", "おとめ座"],
+    "天秤座": ["天秤座", "てんびん座"],
+    "蠍座": ["蠍座", "さそり座"],
+    "射手座": ["射手座", "いて座"],
+    "山羊座": ["山羊座", "やぎ座"],
+    "水瓶座": ["水瓶座", "みずがめ座"],
+    "魚座": ["魚座", "うお座"]
+}
 blood_types = ["AB型", "A型", "B型", "O型"]
 
 app = Flask(__name__)
@@ -36,7 +47,12 @@ def callback():
 def handle_message(event):
     user_message = event.message.text.strip()
 
-    found_zodiac = next((z for z in zodiac_signs if z in user_message), None)
+    found_zodiac = None
+    for key, aliases in zodiac_signs_map.items():
+        if any(alias in user_message for alias in aliases):
+            found_zodiac = key
+            break
+
     found_blood = next((b for b in blood_types if b in user_message), None)
 
     if not found_zodiac or not found_blood:
