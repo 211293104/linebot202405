@@ -2,23 +2,20 @@ import os
 from flask import Flask, request, abort
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
-from linebot.models import MessageEvent, TextMessage, TextSendMessage, FlexSendMessage
+from linebot.models import MessageEvent, TextMessage, TextSendMessage
 from datetime import datetime
 from sophie_fortune import generate_fortune_ranking
 from flex_message import create_flex_message
 
-# LINE Bot API設定
 LINE_CHANNEL_ACCESS_TOKEN = os.environ["LINE_CHANNEL_ACCESS_TOKEN"]
 LINE_CHANNEL_SECRET = os.environ["LINE_CHANNEL_SECRET"]
 line_bot_api = LineBotApi(LINE_CHANNEL_ACCESS_TOKEN)
 handler = WebhookHandler(LINE_CHANNEL_SECRET)
 
-# 星座・血液型リスト
 zodiac_signs = [
     "牡羊座", "牡牛座", "双子座", "蟹座", "獅子座", "乙女座",
     "天秤座", "蠍座", "射手座", "山羊座", "水瓶座", "魚座"
 ]
-# 血液型は長い順に並べる
 blood_types = ["AB型", "A型", "B型", "O型"]
 
 app = Flask(__name__)
@@ -39,7 +36,6 @@ def callback():
 def handle_message(event):
     user_message = event.message.text.strip()
 
-    # 星座と血液型を文章から探す
     found_zodiac = next((z for z in zodiac_signs if z in user_message), None)
     found_blood = next((b for b in blood_types if b in user_message), None)
 
@@ -51,7 +47,6 @@ def handle_message(event):
         )
         return
 
-    # 今日のランキングを取得
     today_str = datetime.now().strftime("%Y-%m-%d")
     ranking_list = generate_fortune_ranking(today_str)
 
