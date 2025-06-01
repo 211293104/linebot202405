@@ -1,11 +1,34 @@
-# ソフィー：LINE連携用 全体コード（ダミーランキング対応版）
+# ソフィー：LINE連携用 全体コード（完全ダミーデータ対応版）
 
-# ダミー関数の追加
 def generate_fortune_ranking(date_str):
     return [
-        {'sign': 'おひつじ座', 'blood': 'A型', 'rank': 1, 'fortune': '大吉'},
-        {'sign': 'おうし座', 'blood': 'B型', 'rank': 2, 'fortune': '中吉'},
-        {'sign': 'ふたご座', 'blood': 'O型', 'rank': 3, 'fortune': '小吉'},
+        {
+            'sign': 'おひつじ座',
+            'blood': 'A型',
+            'rank': 1,
+            'money': 5,
+            'work': 4,
+            'love': 3,
+            'lucky_action': '赤いものを身につけると吉！'
+        },
+        {
+            'sign': 'おうし座',
+            'blood': 'B型',
+            'rank': 2,
+            'money': 3,
+            'work': 5,
+            'love': 4,
+            'lucky_action': '朝一番の深呼吸で気分アップ！'
+        },
+        {
+            'sign': 'ふたご座',
+            'blood': 'O型',
+            'rank': 3,
+            'money': 2,
+            'work': 3,
+            'love': 5,
+            'lucky_action': '笑顔を意識して話すと運気向上！'
+        }
     ]
 
 class FortuneBot:
