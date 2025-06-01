@@ -1,4 +1,12 @@
-# ソフィー：LINE連携用の全体コード修正版
+# ソフィー：LINE連携用 全体コード（ダミーランキング対応版）
+
+# ダミー関数の追加
+def generate_fortune_ranking(date_str):
+    return [
+        {'sign': 'おひつじ座', 'blood': 'A型', 'rank': 1, 'fortune': '大吉'},
+        {'sign': 'おうし座', 'blood': 'B型', 'rank': 2, 'fortune': '中吉'},
+        {'sign': 'ふたご座', 'blood': 'O型', 'rank': 3, 'fortune': '小吉'},
+    ]
 
 class FortuneBot:
     def __init__(self):
@@ -6,7 +14,6 @@ class FortuneBot:
         self.help_message = "キーワードを入力してくださいね。運勢やアドバイスをご希望の場合は『アドバイス希望』と送ってください！"
 
     def get_today_fortune(self, zodiac, blood_type):
-        # 簡易版の運勢コメント
         return f"{zodiac}×{blood_type}さん、今日は挑戦に向く日ですよ！"
 
     def handle_keyword(self, keyword, zodiac, blood_type):
@@ -17,7 +24,6 @@ class FortuneBot:
             return "ごめんなさい、そのキーワードはわかりません💦『アドバイス希望』と送ってくださいね。"
 
     def get_advice(self, zodiac, blood_type):
-        # 星座×血液型に基づく簡易アドバイス
         advice_list = [
             "今日は焦らず、着実にいきましょう。",
             "新しいことにチャレンジすると良い日です！",
@@ -28,7 +34,7 @@ class FortuneBot:
         advice = random.choice(advice_list)
         return f"{zodiac}×{blood_type}さんへの今日のアドバイス：{advice}"
 
-# LINE側の処理（例示）
+# LINE側の処理例
 def line_greeting():
     bot = FortuneBot()
     return bot.line_greeting
@@ -37,8 +43,10 @@ def line_help():
     bot = FortuneBot()
     return bot.help_message
 
-# 使用例（バックエンド側で呼び出し）
+# main.py想定の流れ
 if __name__ == "__main__":
+    from datetime import datetime
+    
     bot = FortuneBot()
     zodiac = "おひつじ座"
     blood_type = "A型"
@@ -47,3 +55,8 @@ if __name__ == "__main__":
     print(line_help())
     print(bot.get_today_fortune(zodiac, blood_type))
     print(bot.handle_keyword("アドバイス希望", zodiac, blood_type))
+    
+    today_str = datetime.now().strftime("%Y-%m-%d")
+    ranking_list = generate_fortune_ranking(today_str)
+    
+    print(f"ダミーランキング取得: {ranking_list}")
