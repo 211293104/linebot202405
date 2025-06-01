@@ -47,12 +47,6 @@ def callback():
 def handle_message(event):
     user_message = event.message.text.strip()
 
-    found_zodiac = None
-    for key, aliases in zodiac_signs_map.items():
-        if any(alias in user_message for alias in aliases):
-def handle_message(event):
-    user_message = event.message.text.strip()
-
     # 挨拶・ヘルプ系はLINE側で処理するのでスキップ
     if user_message.lower() in ["こんにちは", "はじめまして", "help", "ヘルプ"]:
         return  # 挨拶・ヘルプはBot側で返信しない
