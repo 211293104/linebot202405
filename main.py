@@ -47,10 +47,6 @@ def callback():
 def handle_message(event):
     user_message = event.message.text.strip()
 
-    # 挨拶・ヘルプ系はLINE側で処理するのでスキップ
-    if user_message.lower() in ["こんにちは", "はじめまして", "help", "ヘルプ"]:
-        return  # 挨拶・ヘルプはBot側で返信しない
-
     found_zodiac = None
     for key, aliases in zodiac_signs_map.items():
         if any(alias in user_message for alias in aliases):
@@ -60,15 +56,15 @@ def handle_message(event):
     found_blood = next((b for b in blood_types if b in user_message), None)
 
     if not found_zodiac or not found_blood:
-        reply_text = "🌟 星座と血液型を含めたメッセージを送ってください！\n例: 牡羊座のA型の運勢を教えて"
+        reply_text = "🌸 星座と血液型を含めたメッセージを送ってください！\n例: 牡羊座のA型の運勢を教えて"
         line_bot_api.reply_message(
             event.reply_token,
             TextSendMessage(text=reply_text)
         )
         return
 
-today_str = datetime.now().strftime("%Y-%m-%d")
-ranking_list = generate_fortune_ranking(today_str)
+    today_str = datetime.now().strftime("%Y-%m-%d")
+    ranking_list = generate_fortune_ranking(today_str)
 
     matched = next((item for item in ranking_list if item['sign'] == found_zodiac and item['blood'] == found_blood), None)
 
@@ -79,10 +75,11 @@ ranking_list = generate_fortune_ranking(today_str)
             flex_message
         )
     else:
-        reply_text = "データが見つかりませんでした、もう一度試してください。"
+        reply_text = "データが見つかりませんでした。もう一度試してください。"
         line_bot_api.reply_message(
             event.reply_token,
             TextSendMessage(text=reply_text)
         )
 
-  
+if __name__ == "__main__":
+    app.run()
