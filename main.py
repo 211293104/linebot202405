@@ -69,7 +69,9 @@ def handle_message(event):
 
     today_str = datetime.now().strftime("%Y-%m-%d")
     ranking_list = generate_fortune_ranking(today_str)
-
+　　　print(f"Generated ranking count: {len(ranking_list)}")
+for item in ranking_list:
+    print(f"{item['sign']} {item['blood']} → total: {item['total']}")
     matched = next((item for item in ranking_list if item['sign'] == found_zodiac and item['blood'] == found_blood), None)
 
     if matched:
