@@ -1,5 +1,6 @@
 import os
 import re
+import random
 from flask import Flask, request, abort
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
@@ -14,7 +15,6 @@ LINE_CHANNEL_SECRET = os.environ["LINE_CHANNEL_SECRET"]
 line_bot_api = LineBotApi(LINE_CHANNEL_ACCESS_TOKEN)
 handler = WebhookHandler(LINE_CHANNEL_SECRET)
 
-# 星座：漢字・ひらがな対応
 zodiac_signs_map = {
     "牡羊座": ["牡羊座", "おひつじ座"],
     "牡牛座": ["牡牛座", "おうし座"],
@@ -31,9 +31,18 @@ zodiac_signs_map = {
 }
 blood_types = ["AB型", "A型", "B型", "O型"]
 
+cheer_messages = [
+    "笑顔は世界を変える魔法だよ！",
+    "深呼吸して、また一歩進もう。",
+    "今日も頑張ってるね、ソフィーは知ってるよ✨",
+    "無理しすぎないで、自分を大事にしてね🌸",
+    "きっとうまくいくよ、信じてみて！",
+    "小さな一歩でも、それは前進だよ💖"
+]
+
 def normalize_input(text):
     text = text.strip().lower()
-    text = re.sub(r'[\\s　]', '', text)  # 全角・半角スペース削除
+    text = re.sub(r'[\\s　]', '', text)
     text = text.replace('ざ', '座')
     text = text.replace('おひつじ', '牡羊')
     text = text.replace('おうし', '牡牛')
@@ -67,6 +76,15 @@ def callback():
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     user_message = normalize_input(event.message.text)
+
+    # 元気メッセージ判定
+    if "元気" in user_message or "励まし" in user_message:
+        reply_text = random.choice(cheer_messages)
+        line_bot_api.reply_message(
+            event.reply_token,
+            TextSendMessage(text=reply_text)
+        )
+        return
 
     found_zodiac = next((key for key, aliases in zodiac_signs_map.items() if any(alias in user_message for alias in aliases)), None)
     found_blood = next((b for b in blood_types if b in user_message), None)
