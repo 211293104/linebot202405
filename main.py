@@ -61,11 +61,16 @@ def normalize_input(text):
     text = text.replace('うお', '魚')
 
     # 血液型の変換（全角・小文字・平仮名対応）
-    text = text.replace('ａ', 'A').replace('ｂ', 'B').replace('ｏ', 'O').replace('ａｂ', 'AB')
-    text = text.replace('a型', 'A型').replace('b型', 'B型').replace('o型', 'O型').replace('ab型', 'AB型')
-    text = text.replace('Ａ', 'A').replace('Ｂ', 'B').replace('Ｏ', 'O').replace('ＡＢ', 'AB')
-    text = text.replace('えー', 'A').replace('びー', 'B').replace('おー', 'O').replace('えーびー', 'AB')
+    # AB型の正規化は先にやること！
+   text = text.replace('ａｂ', 'AB')
+   text = text.replace('ab型', 'AB型')
+   text = text.replace('ＡＢ', 'AB')
 
+   # そのあとに個別文字を置き換え
+   text = text.replace('ａ', 'A').replace('ｂ', 'B').replace('ｏ', 'O')
+   text = text.replace('a型', 'A型').replace('b型', 'B型').replace('o型', 'O型')
+   text = text.replace('Ａ', 'A').replace('Ｂ', 'B').replace('Ｏ', 'O')
+   text = text.replace('えー', 'A').replace('びー', 'B').replace('おー', 'O').replace('えーびー', 'AB')
     return text
 app = Flask(__name__)
 
