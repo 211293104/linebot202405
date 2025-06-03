@@ -105,12 +105,12 @@ def handle_message(event):
     print(f"[DEBUG] Using date string: {today_str}")
 
     ranking_list = generate_fortune_ranking(today_str)
+    print(f"[DEBUG] First few rankings: {ranking_list[:3]}")
     matched = next((
     item for item in ranking_list
     if item['sign'].strip() == found_zodiac and item['blood'].strip() == found_blood
-), None)
-(f"[DEBUG] First few rankings: {ranking_list[:3]}")
-    
+    ), None)
+    print(f"[DEBUG] Matched fortune result: {matched}")
 
     if matched:
         flex_message = create_flex_message(matched)
