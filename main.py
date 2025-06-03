@@ -44,6 +44,8 @@ cheer_messages = [
 def normalize_input(text):
     text = text.strip().lower()
     text = re.sub(r'[\\s\u3000]', '', text)
+
+    # 星座の変換（表記ゆれ対応）
     text = text.replace('ざ', '座')
     text = text.replace('おひつじ', '牡羊')
     text = text.replace('おうし', '牡牛')
@@ -57,9 +59,14 @@ def normalize_input(text):
     text = text.replace('やぎ', '山羊')
     text = text.replace('みずがめ', '水瓶')
     text = text.replace('うお', '魚')
-    text = text.replace('ｏ', 'O').replace('ａ', 'A').replace('ｂ', 'B').replace('ａｂ', 'AB')
-    return text
 
+    # 血液型の変換（全角・小文字・平仮名対応）
+    text = text.replace('ａ', 'A').replace('ｂ', 'B').replace('ｏ', 'O').replace('ａｂ', 'AB')
+    text = text.replace('a型', 'A型').replace('b型', 'B型').replace('o型', 'O型').replace('ab型', 'AB型')
+    text = text.replace('Ａ', 'A').replace('Ｂ', 'B').replace('Ｏ', 'O').replace('ＡＢ', 'AB')
+    text = text.replace('えー', 'A').replace('びー', 'B').replace('おー', 'O').replace('えーびー', 'AB')
+
+    return text
 app = Flask(__name__)
 
 @app.route("/callback", methods=['POST'])
