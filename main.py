@@ -42,7 +42,7 @@ cheer_messages = [
 
 def normalize_input(text):
     text = text.strip().lower()
-    text = re.sub(r'[\\s　]', '', text)
+    text = re.sub(r'[\\s\u3000]', '', text)
     text = text.replace('ざ', '座')
     text = text.replace('おひつじ', '牡羊')
     text = text.replace('おうし', '牡牛')
@@ -76,8 +76,8 @@ def callback():
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     user_message = normalize_input(event.message.text)
+    print(f"[DEBUG] User message after normalization: {user_message}")
 
-    # 元気メッセージ判定
     if "元気" in user_message or "励まし" in user_message:
         reply_text = random.choice(cheer_messages)
         line_bot_api.reply_message(
@@ -89,6 +89,8 @@ def handle_message(event):
     found_zodiac = next((key for key, aliases in zodiac_signs_map.items() if any(alias in user_message for alias in aliases)), None)
     found_blood = next((b for b in blood_types if b in user_message), None)
 
+    print(f"[DEBUG] Found zodiac: {found_zodiac}, Found blood: {found_blood}")
+
     if not found_zodiac or not found_blood:
         reply_text = "🌸 星座と血液型を含めたメッセージを送ってください！\n例: 牡羊座のA型の運勢を教えて"
         line_bot_api.reply_message(
@@ -99,9 +101,12 @@ def handle_message(event):
 
     jst = pytz.timezone('Asia/Tokyo')
     today_str = datetime.now(jst).strftime("%Y-%m-%d")
+    print(f"[DEBUG] Using date string: {today_str}")
+
     ranking_list = generate_fortune_ranking(today_str)
 
     matched = next((item for item in ranking_list if item['sign'] == found_zodiac and item['blood'] == found_blood), None)
+    print(f"[DEBUG] Matched fortune result: {matched}")
 
     if matched:
         flex_message = create_flex_message(matched)
