@@ -1,9 +1,11 @@
 import os
+import re
 from flask import Flask, request, abort
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, TextSendMessage
 from datetime import datetime
+import pytz
 from sophie_fortune import generate_fortune_ranking
 from flex_message import create_flex_message
 
@@ -29,6 +31,25 @@ zodiac_signs_map = {
 }
 blood_types = ["AB型", "A型", "B型", "O型"]
 
+def normalize_input(text):
+    text = text.strip().lower()
+    text = re.sub(r'[\\s　]', '', text)  # 全角・半角スペース削除
+    text = text.replace('ざ', '座')
+    text = text.replace('おひつじ', '牡羊')
+    text = text.replace('おうし', '牡牛')
+    text = text.replace('ふたご', '双子')
+    text = text.replace('かに', '蟹')
+    text = text.replace('しし', '獅子')
+    text = text.replace('おとめ', '乙女')
+    text = text.replace('てんびん', '天秤')
+    text = text.replace('さそり', '蠍')
+    text = text.replace('いて', '射手')
+    text = text.replace('やぎ', '山羊')
+    text = text.replace('みずがめ', '水瓶')
+    text = text.replace('うお', '魚')
+    text = text.replace('ｏ', 'O').replace('ａ', 'A').replace('ｂ', 'B').replace('ａｂ', 'AB')
+    return text
+
 app = Flask(__name__)
 
 @app.route("/callback", methods=['POST'])
@@ -45,14 +66,9 @@ def callback():
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    user_message = event.message.text.strip()
+    user_message = normalize_input(event.message.text)
 
-    found_zodiac = None
-    for key, aliases in zodiac_signs_map.items():
-        if any(alias in user_message for alias in aliases):
-            found_zodiac = key
-            break
-
+    found_zodiac = next((key for key, aliases in zodiac_signs_map.items() if any(alias in user_message for alias in aliases)), None)
     found_blood = next((b for b in blood_types if b in user_message), None)
 
     if not found_zodiac or not found_blood:
@@ -63,7 +79,8 @@ def handle_message(event):
         )
         return
 
-    today_str = datetime.now().strftime("%Y-%m-%d")
+    jst = pytz.timezone('Asia/Tokyo')
+    today_str = datetime.now(jst).strftime("%Y-%m-%d")
     ranking_list = generate_fortune_ranking(today_str)
 
     matched = next((item for item in ranking_list if item['sign'] == found_zodiac and item['blood'] == found_blood), None)
