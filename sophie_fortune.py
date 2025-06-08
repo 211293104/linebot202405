@@ -68,7 +68,7 @@ def generate_fortune_ranking(date_str):
 
   from datetime import datetime
 
-def get_fortune_result(zodiac, blood):
+  def get_fortune_result(zodiac, blood):
     results = generate_fortune_ranking(date_str=datetime.now().strftime('%Y-%m-%d'))
 
     for idx, item in enumerate(results, 1):
