@@ -66,14 +66,18 @@ def generate_fortune_ranking(date_str):
                 "lucky_action": action
             })
 
-    results.sort(key=lambda x: x["total"], reverse=True)
+  from datetime import datetime
 
-    for idx, item in enumerate(results, 1):
 def get_fortune_result(zodiac, blood):
     results = generate_fortune_ranking(date_str=datetime.now().strftime('%Y-%m-%d'))
+
+    for idx, item in enumerate(results, 1):
+        item["rank"] = idx - 1
+
     for item in results:
         if item["sign"] == zodiac and item["blood"] == blood:
             return item
+
     return {
         "money": 0,
         "work": 0,
@@ -82,6 +86,3 @@ def get_fortune_result(zodiac, blood):
         "Lucky_action": "何もしない",
         "rank": 47
     }
-item["rank"] = idx
-
-    return results
