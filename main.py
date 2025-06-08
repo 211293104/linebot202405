@@ -63,16 +63,17 @@ def handle_message(event):
             fortune_data = get_fortune_result(zodiac, blood)
             magic = get_magic_phrase()
 
-            reply = (
-                f"🔮 {zodiac} × {blood} の運勢 🔮\n"
-                f"💰 金運: {fortune_data['money']}\n"
-                f"💼 仕事運: {fortune_data['work']}\n"
-                f"💘 恋愛運: {fortune_data['love']}\n"
-                f"🎯 ラッキーアクション: {fortune_data['Lucky_action']}\n"
-                f"🌟 総合ポイント: {fortune_data['total']}点\n"
-                f"🏅 今日の順位: {fortune_data['rank'] + 1}位\n"
-                f"\n💫 今日の魔法のひとこと 💫\n{magic}"
-            )
+            reply = f"""🔮 {zodiac} × {blood} の運勢 🔮
+💰 金運: {fortune_data['money']}
+💼 仕事運: {fortune_data['work']}
+💘 恋愛運: {fortune_data['love']}
+🎯 ラッキーアクション: {fortune_data['Lucky_action']}
+🌟 総合ポイント: {fortune_data['total']}点
+🏅 今日の順位: {fortune_data['rank'] + 1}位
+
+💫 今日の魔法のひとこと 💫
+{magic}
+"""
 
             line_bot_api.reply_message(
                 event.reply_token,
