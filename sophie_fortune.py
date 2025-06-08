@@ -69,9 +69,19 @@ def generate_fortune_ranking(date_str):
     results.sort(key=lambda x: x["total"], reverse=True)
 
     for idx, item in enumerate(results, 1):
-        item["rank"] = idx
+def get_fortune_result(zodiac, blood):
+    results = generate_fortune_ranking(date_str=datetime.now().strftime('%Y-%m-%d'))
+    for item in results:
+        if item["sign"] == zodiac and item["blood"] == blood:
+            return item
+    return {
+        "money": 0,
+        "work": 0,
+        "love": 0,
+        "total": 0,
+        "Lucky_action": "何もしない",
+        "rank": 47
+    }
+item["rank"] = idx
 
     return results
-def get_fortune_result(zodiac, blood):
-    # 仮のロジック：後でパチンコ／スロット連携もOK
-    return f"{zodiac} × {blood} の運勢は…大吉です！🎯✨"
