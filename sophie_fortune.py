@@ -44,3 +44,6 @@ def generate_fortune_ranking(date_str):
         item["rank"] = idx
 
     return results
+def get_fortune_result(zodiac, blood):
+    # 仮のロジック：後でパチンコ／スロット連携もOK
+    return f"{zodiac} × {blood} の運勢は…大吉です！🎯✨"
