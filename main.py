@@ -6,14 +6,12 @@ from sophie_fortune import get_fortune_result, get_magic_phrase
 
 app = Flask(__name__)
 
-# 環境変数または直接埋め込み（セキュリティのため本番は環境変数推奨）
 LINE_CHANNEL_ACCESS_TOKEN = os.getenv("LINE_CHANNEL_ACCESS_TOKEN", "<YOUR_CHANNEL_ACCESS_TOKEN>")
 LINE_CHANNEL_SECRET = os.getenv("LINE_CHANNEL_SECRET", "<YOUR_CHANNEL_SECRET>")
 
 line_bot_api = LineBotApi(LINE_CHANNEL_ACCESS_TOKEN)
 handler = WebhookHandler(LINE_CHANNEL_SECRET)
 
-# ユーザーごとの状態を記録（簡易実装）
 user_state = {}
 
 @app.route("/callback", methods=['POST'])
@@ -25,7 +23,7 @@ def callback():
         handler.handle(body, signature)
     except Exception as e:
         print(f"[Webhook ERROR]: {e}")
-        return 'Error', 200  # 開発時は200返してWebhook確認成功させる
+        return 'Error', 200
 
     return 'OK'
 
@@ -62,15 +60,25 @@ def handle_message(event):
         if user_id in user_state and "zodiac" in user_state[user_id]:
             zodiac = user_state[user_id]["zodiac"]
             blood = text
-            result = get_fortune_result(zodiac, blood)
+            fortune_data = get_fortune_result(zodiac, blood)
             magic = get_magic_phrase()
-            reply = f"🔮 {zodiac} × {blood} の運勢 🔮\n{result}\n\n💫 今日の魔法のひとこと 💫\n{magic}"
+
+            reply = (
+                f"🔮 {zodiac} × {blood} の運勢 🔮\n"
+                f"💰 金運: {fortune_data['money']}\n"
+                f"💼 仕事運: {fortune_data['work']}\n"
+                f"💘 恋愛運: {fortune_data['love']}\n"
+                f"🎯 ラッキーアクション: {fortune_data['Lucky_action']}\n"
+                f"🌟 総合ポイント: {fortune_data['total']}点\n"
+                f"🏅 今日の順位: {fortune_data['rank'] + 1}位\n"
+                f"\n💫 今日の魔法のひとこと 💫\n{magic}"
+            )
 
             line_bot_api.reply_message(
                 event.reply_token,
                 TextSendMessage(text=reply)
             )
-            user_state[user_id] = {}  # 状態リセット
+            user_state[user_id] = {}
     else:
         line_bot_api.reply_message(
             event.reply_token,
