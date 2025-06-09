@@ -93,3 +93,36 @@ def get_magic_phrase():
     ]
 
     return random.choice(ponkotsu_phrases if random.random() < 0.2 else regular_phrases)
+
+
+
+def get_fortune_data(zodiac, blood_type):
+    today = datetime.now().strftime('%Y-%m-%d')
+    data_list = generate_fortune_ranking(today)
+    for item in data_list:
+        if item["sign"] == zodiac and item["blood"] == blood_type:
+            return {
+                "rank": item["rank"],
+                "total": item["total"],
+                "luck_scores": {
+                    "money": item["money"],
+                    "work": item["work"],
+                    "love": item["love"]
+                },
+                "lucky_color": item.get("lucky_color", "赤"),
+                "lucky_item": item.get("lucky_item", "ラッキーアイテム不明")
+            }
+    return {}
+
+def generate_fortune_message(zodiac, blood_type, rank, total, luck_scores, lucky_color, lucky_item):
+    return f"""✨本日の運勢✨
+{zodiac} {blood_type}
+⭐️ 総合運: {total}点（順位: 第{rank}位）
+
+💰 金運: {luck_scores['money']}
+💼 仕事運: {luck_scores['work']}
+❤️ 恋愛運: {luck_scores['love']}
+
+🎨 ラッキーカラー: {lucky_color}
+🎁 ラッキーアイテム: {lucky_item}
+"""
