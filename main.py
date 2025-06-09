@@ -32,7 +32,7 @@ def handle_message(event):
     blood_list = ["A型", "B型", "O型", "AB型"]
 
     try:
-        # 日本時間でのログ出力などに使用
+        # 日本時間でのログ出力
         jst = pytz.timezone('Asia/Tokyo')
         now = datetime.now(jst)
         print(f"⏰ 現在の日本時間: {now.strftime('%Y-%m-%d %H:%M:%S')}")
@@ -60,6 +60,15 @@ def handle_message(event):
                 TextSendMessage(text="あなたの血液型を教えてください♪", quick_reply=quick_reply)
             )
 
+        elif "占い" in text:
+            quick_reply = QuickReply(items=[
+                QuickReplyButton(action=MessageAction(label=zodiac, text=zodiac)) for zodiac in zodiac_list
+            ])
+            line_bot_api.reply_message(
+                event.reply_token,
+                TextSendMessage(text="こんにちは！まずはあなたの星座を選んでください🌟", quick_reply=quick_reply)
+            )
+
         else:
             quick_reply = QuickReply(items=[
                 QuickReplyButton(action=MessageAction(label=zodiac, text=zodiac)) for zodiac in zodiac_list
@@ -75,3 +84,4 @@ def handle_message(event):
         line_bot_api.reply_message(
             event.reply_token,
             TextSendMessage(text="エラーが発生しちゃいました💦 もう一度試してみてね！")
+        )
