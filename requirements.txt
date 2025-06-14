@@ -3,4 +3,4 @@ line-bot-sdk
 gunicorn
 openai
 pytz
-pip install apscheduler pytz line-bot-sdk
+apscheduler
