@@ -5,16 +5,14 @@ from linebot.models import (
     QuickReply, QuickReplyButton, MessageAction
 )
 from sophie_fortune import get_fortune_data, generate_fortune_message
+import os
 import traceback
 from datetime import datetime
 import pytz
 
-# 🔐 安全に管理する場合は .env や Render環境変数を使ってください
-LINE_CHANNEL_ACCESS_TOKEN = 'YOUR_CHANNEL_ACCESS_TOKEN'
-LINE_CHANNEL_SECRET = 'YOUR_CHANNEL_SECRET'
-
-line_bot_api = LineBotApi(LINE_CHANNEL_ACCESS_TOKEN)
-handler = WebhookHandler(LINE_CHANNEL_SECRET)
+# ✅ 環境変数から安全に読み込む
+line_bot_api = LineBotApi(os.getenv('LINE_CHANNEL_ACCESS_TOKEN'))
+handler = WebhookHandler(os.getenv('LINE_CHANNEL_SECRET'))
 
 app = Flask(__name__)
 
@@ -44,7 +42,7 @@ def handle_message(event):
     try:
         text = event.message.text.strip()
         now = datetime.now(pytz.timezone('Asia/Tokyo'))
-        print(f"🕒 [{now.strftime('%Y-%m-%d %H:%M:%S')}] ユーザー入力: {text}")
+        print(f"📩 [{now.strftime('%Y-%m-%d %H:%M:%S')}] ユーザー入力: {text}")
 
         if any(z in text for z in zodiac_list) and any(b in text for b in blood_list):
             try:
@@ -60,7 +58,7 @@ def handle_message(event):
             if not data:
                 line_bot_api.reply_message(
                     event.reply_token,
-                    TextSendMessage(text="⚠ データが見つかりませんでした。もう一度選び直してね！")
+                    TextSendMessage(text="⚠ データが見つかりませんでした。もう一度選んでね")
                 )
                 return
 
@@ -83,7 +81,7 @@ def handle_message(event):
             ])
             line_bot_api.reply_message(
                 event.reply_token,
-                TextSendMessage(text="🩸 血液型を教えてください！", quick_reply=quick_reply)
+                TextSendMessage(text="🩸 血液型を教えてください", quick_reply=quick_reply)
             )
             return
 
@@ -93,11 +91,11 @@ def handle_message(event):
             ])
             line_bot_api.reply_message(
                 event.reply_token,
-                TextSendMessage(text="🌟 星座を選びなおしてね！", quick_reply=quick_reply)
+                TextSendMessage(text="🌟 星座を選び直してね", quick_reply=quick_reply)
             )
             return
 
-        elif "占い" in text:
+        elif "占い" in text or text == "占いして":
             quick_reply = QuickReply(items=[
                 QuickReplyButton(action=MessageAction(label=zodiac, text=zodiac)) for zodiac in zodiac_list
             ])
@@ -113,7 +111,7 @@ def handle_message(event):
             ])
             line_bot_api.reply_message(
                 event.reply_token,
-                TextSendMessage(text="🌠 星座から始めてね！", quick_reply=quick_reply)
+                TextSendMessage(text="🌠 星座から始めてください", quick_reply=quick_reply)
             )
 
     except Exception as e:
@@ -121,5 +119,5 @@ def handle_message(event):
         traceback.print_exc()
         line_bot_api.reply_message(
             event.reply_token,
-            TextSendMessage(text="エラーが出ちゃいました💦 もう一度試してみてね！")
+            TextSendMessage(text="エラーが出ちゃいました💦 もう一度試してね")
         )
