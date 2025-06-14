@@ -9,10 +9,14 @@ import traceback
 from datetime import datetime
 import pytz
 
-app = Flask(__name__)
+# 🔐 安全に管理する場合は .env や Render環境変数を使ってください
+LINE_CHANNEL_ACCESS_TOKEN = 'YOUR_CHANNEL_ACCESS_TOKEN'
+LINE_CHANNEL_SECRET = 'YOUR_CHANNEL_SECRET'
 
-line_bot_api = LineBotApi('YOUR_CHANNEL_ACCESS_TOKEN')
-handler = WebhookHandler('YOUR_CHANNEL_SECRET')
+line_bot_api = LineBotApi(LINE_CHANNEL_ACCESS_TOKEN)
+handler = WebhookHandler(LINE_CHANNEL_SECRET)
+
+app = Flask(__name__)
 
 zodiac_list = [
     "おひつじ座", "おうし座", "ふたご座", "かに座", "しし座",
@@ -30,7 +34,7 @@ def callback():
     try:
         handler.handle(body, signature)
     except Exception as e:
-        print("⚠ Webhook処理エラー:", e)
+        print("⚠ Webhook処理中のエラー:", e)
         traceback.print_exc()
 
     return 'OK'
@@ -38,9 +42,9 @@ def callback():
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     try:
-        text = event.message.text
+        text = event.message.text.strip()
         now = datetime.now(pytz.timezone('Asia/Tokyo'))
-        print(f"📩 受信内容 [{now.strftime('%Y-%m-%d %H:%M:%S')}]: {text}")
+        print(f"🕒 [{now.strftime('%Y-%m-%d %H:%M:%S')}] ユーザー入力: {text}")
 
         if any(z in text for z in zodiac_list) and any(b in text for b in blood_list):
             try:
@@ -48,7 +52,7 @@ def handle_message(event):
             except ValueError:
                 line_bot_api.reply_message(
                     event.reply_token,
-                    TextSendMessage(text="⚠ 星座と血液型を半角スペースで区切って送ってください\n例：てんびん座 AB型")
+                    TextSendMessage(text="⚠ 星座と血液型の間は半角スペースで区切ってね！\n例：やぎ座 AB型")
                 )
                 return
 
@@ -56,7 +60,7 @@ def handle_message(event):
             if not data:
                 line_bot_api.reply_message(
                     event.reply_token,
-                    TextSendMessage(text="⚠ 入力が一致しませんでした。再度選び直してください。")
+                    TextSendMessage(text="⚠ データが見つかりませんでした。もう一度選び直してね！")
                 )
                 return
 
@@ -70,7 +74,6 @@ def handle_message(event):
                 lucky_item=data["lucky_item"],
                 magic_phrase=data["magic_phrase"]
             )
-
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text=message))
             return
 
@@ -80,7 +83,7 @@ def handle_message(event):
             ])
             line_bot_api.reply_message(
                 event.reply_token,
-                TextSendMessage(text="🩸 あなたの血液型を選んでください", quick_reply=quick_reply)
+                TextSendMessage(text="🩸 血液型を教えてください！", quick_reply=quick_reply)
             )
             return
 
@@ -90,7 +93,7 @@ def handle_message(event):
             ])
             line_bot_api.reply_message(
                 event.reply_token,
-                TextSendMessage(text="🌟 星座を選び直してください", quick_reply=quick_reply)
+                TextSendMessage(text="🌟 星座を選びなおしてね！", quick_reply=quick_reply)
             )
             return
 
@@ -100,7 +103,7 @@ def handle_message(event):
             ])
             line_bot_api.reply_message(
                 event.reply_token,
-                TextSendMessage(text="🔮 星座を選んでください", quick_reply=quick_reply)
+                TextSendMessage(text="🔮 占いたい星座を教えてください", quick_reply=quick_reply)
             )
             return
 
@@ -110,14 +113,13 @@ def handle_message(event):
             ])
             line_bot_api.reply_message(
                 event.reply_token,
-                TextSendMessage(text="🌟 星座からスタートしましょう", quick_reply=quick_reply)
+                TextSendMessage(text="🌠 星座から始めてね！", quick_reply=quick_reply)
             )
-            return
 
     except Exception as e:
         print("❌ メッセージ処理エラー:", e)
         traceback.print_exc()
         line_bot_api.reply_message(
             event.reply_token,
-            TextSendMessage(text="エラーが発生しました💦 もう一度お試しください")
+            TextSendMessage(text="エラーが出ちゃいました💦 もう一度試してみてね！")
         )
