@@ -1,20 +1,12 @@
-import hashlib
-from datetime import datetime
 import random
+from datetime import datetime
+from fortune_assets import lucky_colors, lucky_items, magic_phrases
 
-zodiac_signs = [
-    "おひつじ座", "おうし座", "ふたご座", "かに座", "しし座", "おとめ座",
-    "てんびん座", "さそり座", "いて座", "やぎ座", "みずがめ座", "うお座"
-]
-
-blood_types = ["A型", "B型", "O型", "AB型"]
-
-lucky_actions = [
-    "笑顔であいさつ", "靴をそろえる", "深呼吸3回", "緑色のものを持つ",
-    "5分間のストレッチ", "知らない人にやさしくする", "大きな声で挨拶する"
-]
+zodiac_signs = [...]
+blood_types = [...]
 
 def generate_seed(date_str):
+    import hashlib
     return int(hashlib.sha256(date_str.encode()).hexdigest(), 16) % (10 ** 8)
 
 def generate_fortune_ranking(date_str):
@@ -27,8 +19,7 @@ def generate_fortune_ranking(date_str):
             money = random.randint(1, 5)
             work = random.randint(1, 5)
             love = random.randint(1, 5)
-            total = money * work + love
-            action = random.choice(lucky_actions)
+            total = money + work + love
             results.append({
                 "sign": sign,
                 "blood": blood,
@@ -36,65 +27,16 @@ def generate_fortune_ranking(date_str):
                 "work": work,
                 "love": love,
                 "total": total,
-                "Lucky_action": action
+                "lucky_color": random.choice(lucky_colors),
+                "lucky_item": random.choice(lucky_items),
+                "magic_phrase": random.choice(magic_phrases)
             })
 
     results.sort(key=lambda x: x["total"], reverse=True)
-
     for idx, item in enumerate(results, 1):
-        item["rank"] = idx - 1
+        item["rank"] = idx
 
     return results
-
-def get_fortune_result(zodiac, blood):
-    results = generate_fortune_ranking(date_str=datetime.now().strftime('%Y-%m-%d'))
-
-    for item in results:
-        if item["sign"] == zodiac and item["blood"] == blood:
-            return item
-
-    return {
-        "money": 0,
-        "work": 0,
-        "love": 0,
-        "total": 0,
-        "Lucky_action": "何もしない",
-        "rank": 47
-    }
-
-def get_magic_phrase():
-    regular_phrases = [
-        "今日のあなたは、思ってるより魅力的です。",
-        "小さなラッキーも、大事にすると大きくなります。",
-        "迷ったときは、コイントスの気持ちで決めてみて。",
-        "紅茶よりもココアが味方の日。あったかくしてね。",
-        "今日のキーワードは『ふんわり』。力を抜いて。",
-        "運命は、たまにダジャレで話しかけてきます。",
-        "あなたの『好き』は未来を変える鍵になります。",
-        "今日は鏡の前でニッコリしてから出かけて。",
-        "宇宙は応援してる。しかもけっこう本気で。",
-        "『ま、いっか』が運を呼びこむ呪文になる日。",
-        "無理しないって、立派な勇気。",
-        "クツの向きをそろえると、道が開けるよ。",
-        "あなたの『笑いのツボ』が人を癒します。",
-        "今日の敵は、明日の笑い話です。",
-        "やさしさは目に見えないラッキーアイテム。",
-        "自分に『おつかれ』と言える人は強い。",
-        "ひとつ手放せば、ひとつ入ってくる。",
-        "今日のあなたの直感は、たぶん本物。",
-    ]
-
-    ponkotsu_phrases = [
-        "魔法のつもりが…出オチ！？💥",
-        "ラッキーアイテムは…うっかり忘れた…ごめんネ！🙇‍♀️",
-        "今日は適当でもなんとかなる気がします…たぶん…きっと…💦",
-        "占星術よりカンで動いてみましょう（根拠なし）🌀",
-        "星が寝坊してるので、代わりにソフィーが応援してます📣✨"
-    ]
-
-    return random.choice(ponkotsu_phrases if random.random() < 0.2 else regular_phrases)
-
-
 
 def get_fortune_data(zodiac, blood_type):
     today = datetime.now().strftime('%Y-%m-%d')
@@ -109,20 +51,25 @@ def get_fortune_data(zodiac, blood_type):
                     "work": item["work"],
                     "love": item["love"]
                 },
-                "lucky_color": item.get("lucky_color", "赤"),
-                "lucky_item": item.get("lucky_item", "ラッキーアイテム不明")
+                "lucky_color": item["lucky_color"],
+                "lucky_item": item["lucky_item"],
+                "magic_phrase": item["magic_phrase"]
             }
     return {}
 
-def generate_fortune_message(zodiac, blood_type, rank, total, luck_scores, lucky_color, lucky_item):
-    return f"""✨本日の運勢✨
-{zodiac} {blood_type}
-⭐️ 総合運: {total}点（順位: 第{rank}位）
+def generate_fortune_message(zodiac, blood_type, rank, total, luck_scores, lucky_color, lucky_item, magic_phrase):
+    return f"""🌸 ソフィーの今日の占い 🌸
 
-💰 金運: {luck_scores['money']}
-💼 仕事運: {luck_scores['work']}
-❤️ 恋愛運: {luck_scores['love']}
+{zodiac} × {blood_type}
+総合順位：{rank}位 / 48
 
-🎨 ラッキーカラー: {lucky_color}
-🎁 ラッキーアイテム: {lucky_item}
+💰 金運：{luck_scores["money"]}/5  
+📁 仕事運：{luck_scores["work"]}/5  
+❤️ 恋愛運：{luck_scores["love"]}/5  
+
+🎀 ラッキーカラー：{lucky_color}  
+🎁 ラッキーアイテム：{lucky_item}
+
+✨ 今日の魔法の一言 ✨  
+{magic_phrase}
 """
