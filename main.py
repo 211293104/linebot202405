@@ -14,6 +14,9 @@ line_bot_api = LineBotApi(os.getenv('LINE_CHANNEL_ACCESS_TOKEN'))
 handler = WebhookHandler(os.getenv('LINE_CHANNEL_SECRET'))
 
 app = Flask(__name__)
+@app.route('/', methods=['GET'])
+def healthcheck():
+    return 'LINEbot is running!', 200
 
 zodiac_list = [
     "おひつじ座", "おうし座", "ふたご座", "かに座", "しし座",
