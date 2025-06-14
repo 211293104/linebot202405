@@ -1,7 +1,7 @@
 from flask import Flask, request
 from linebot import LineBotApi, WebhookHandler
 from linebot.models import (
-    MessageEvent, TextMessage, QuickReply, QuickReplyButton,
+    MessageEvent, TextMessage, TextSendMessage, QuickReplyButton,
     MessageAction, FlexSendMessage
 )
 from sophie_fortune import get_fortune_data, generate_fortune_flex_message
